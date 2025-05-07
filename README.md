@@ -15,7 +15,7 @@ Aplicación interactiva en Streamlit para calcular y visualizar el rendimiento d
 - matplotlib
 - Streamlit
 
-En el repositorio se tiene ejemplos descargables de la estruturas de los archivos, siendo el archivo a cargar "datso_reaactivos.xlsx" y el que se descargará "resultados_rendiemiento.xlsx"
+En el repositorio se tiene ejemplos descargables de la estruturas de los archivos, siendo el archivo a cargar "datos_reactivos.xlsx" y el que se descargará "resultados_rendimiento.xlsx"
 
 ## Cómo ejecutar
 ```bash
