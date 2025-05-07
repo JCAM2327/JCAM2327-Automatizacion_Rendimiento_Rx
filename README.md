@@ -15,7 +15,11 @@ Aplicación interactiva en Streamlit para calcular y visualizar el rendimiento d
 - matplotlib
 - Streamlit
 
-En el repositorio se tiene ejemplos descargables de la estruturas de los archivos, siendo el archivo a cargar "datos_reactivos.xlsx" y el que se descargará "resultados_rendimiento.xlsx"
+En el repositorio se tiene ejemplos descargables de la estruturas de los archivos, siendo el archivo a cargar "datos_reactivos.xlsx" y el que se descargará "resultados_rendimiento.xlsx".
+
+## 🌐 Ver la app en línea
+[Haz clic aquí para ejecutar la app]([https://TU-URL.streamlit.app](https://jcam2327-automatizacionrendimientorx-cubvwer6yx2nzo5pc2lc8z.streamlit.app/))
+
 
 ## Cómo ejecutar
 ```bash
