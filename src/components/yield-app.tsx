@@ -38,6 +38,7 @@ export function YieldApp() {
   const [results, setResults] = useState<YieldResult[]>([]);
   const [stats, setStats] = useState<SummaryStats | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [calcError, setCalcError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -50,8 +51,6 @@ export function YieldApp() {
     () => (stats ? summarizeResults(results, stats) : null),
     [results, stats]
   );
-  const canCalculate = rows.length > 0 && Boolean(realColumn) && Boolean(theoreticalColumn);
-
   const statCards = stats
     ? [
         {
@@ -94,6 +93,7 @@ export function YieldApp() {
 
   const loadFile = async (selectedFile: File) => {
     setError(null);
+    setCalcError(null);
     setNotice(null);
     setIsLoading(true);
     clearResults();
@@ -168,6 +168,7 @@ export function YieldApp() {
 
   const handleSample = async () => {
     setError(null);
+    setCalcError(null);
     setIsLoading(true);
 
     try {
@@ -198,18 +199,28 @@ export function YieldApp() {
     setTheoreticalColumn(nextTheoretical);
     clearResults();
     setError(null);
+    setCalcError(null);
     setNotice(null);
   };
 
   const handleCalculate = () => {
     setError(null);
     setNotice(null);
+    setCalcError(null);
+
+    if (realColumn && realColumn === theoreticalColumn) {
+      clearResults();
+      setCalcError(
+        "Elegí columnas distintas para el producto real y el producto teórico."
+      );
+      return;
+    }
 
     const analysis = analyzeRows(rows, realColumn, theoreticalColumn);
 
     if (!analysis.ok) {
       clearResults();
-      setError(analysis.error);
+      setCalcError(analysis.error);
       return;
     }
 
@@ -247,6 +258,7 @@ export function YieldApp() {
     setTheoreticalColumn("");
     clearResults();
     setError(null);
+    setCalcError(null);
     setNotice(null);
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -562,7 +574,7 @@ export function YieldApp() {
                   className="button button-primary"
                   type="button"
                   onClick={handleCalculate}
-                  disabled={!canCalculate || isLoading}
+                  disabled={isLoading}
                 >
                   Calcular rendimiento
                 </button>
@@ -574,6 +586,12 @@ export function YieldApp() {
                   Limpiar
                 </button>
               </div>
+
+              {calcError ? (
+                <p className="message message-error" role="alert">
+                  {calcError}
+                </p>
+              ) : null}
             </section>
           </>
         ) : null}
