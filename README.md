@@ -96,8 +96,3 @@ El archivo debe tener al menos dos columnas numéricas: una para el producto rea
 
 La implementación anterior en Python está en [`streamlit/`](streamlit/README.md). Se conserva como referencia y no es la versión principal del proyecto.
 
-## Enlaces
-
-- [Demo en Vercel](https://rendimientoquimico.vercel.app)
-- [Repositorio en GitHub](https://github.com/JCAM2327/JCAM2327-Automatizacion_Rendimiento_Rx)
-- [Portfolio](https://jcam2327.github.io/portfolio/)
