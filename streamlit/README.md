@@ -4,7 +4,7 @@ Aplicación interactiva en Streamlit para calcular y visualizar el rendimiento d
 
 ## Estado
 
-MVP. Al 2026-11-06 no hay una demo pública estable verificada: el despliegue de Vercel devuelve 404 y el enlace de Streamlit redirige a inicio de sesión. El código y los archivos de ejemplo están disponibles en el repositorio; para probar la app, ejecutala localmente.
+Versión anterior conservada como referencia. La implementación principal en Next.js tiene una demo pública en <https://rendimientoquimico.vercel.app>. Para probar esta versión en Streamlit, ejecutala localmente.
 
 ## Características
 

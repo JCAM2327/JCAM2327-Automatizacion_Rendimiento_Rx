@@ -4,7 +4,7 @@ Aplicación web para calcular y visualizar el rendimiento de síntesis químicas
 
 ## Estado
 
-MVP. Al 2026-11-06 no hay una demo pública estable verificada. El código puede ejecutarse localmente con Next.js; la versión anterior en Streamlit se conserva en `streamlit/` como referencia.
+MVP con demo pública en Vercel: <https://rendimientoquimico.vercel.app>. La versión anterior en Streamlit se conserva en `streamlit/` como referencia.
 
 ## Características
 
@@ -96,5 +96,6 @@ La implementación anterior en Python está en [`streamlit/`](streamlit/README.m
 
 ## Enlaces
 
+- [Demo en Vercel](https://rendimientoquimico.vercel.app)
 - [Repositorio en GitHub](https://github.com/JCAM2327/JCAM2327-Automatizacion_Rendimiento_Rx)
 - [Portfolio](https://jcam2327.github.io/portfolio/)
