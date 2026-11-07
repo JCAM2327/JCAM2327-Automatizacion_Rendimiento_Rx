@@ -731,27 +731,6 @@ export function YieldApp() {
         ) : null}
       </div>
 
-      <footer className="site-footer">
-        <span>
-          Los datos se procesan en el navegador. No se envían a un servidor.
-        </span>
-        <div>
-          <a
-            href="https://github.com/JCAM2327/JCAM2327-Automatizacion_Rendimiento_Rx"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Repositorio
-          </a>
-          <a
-            href="https://jcam2327.github.io/portfolio/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Portfolio
-          </a>
-        </div>
-      </footer>
     </main>
   );
 }

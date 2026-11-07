@@ -951,34 +951,6 @@ button {
   font-size: 0.8rem;
 }
 
-.site-footer {
-  width: min(1120px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 0 0 36px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-  color: var(--faint);
-  font-size: 0.78rem;
-}
-
-.site-footer div {
-  display: flex;
-  gap: 16px;
-}
-
-.site-footer a {
-  color: var(--accent-strong);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.site-footer a:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
 @media (max-width: 980px) {
   .hero-inner {
     grid-template-columns: 1fr;
@@ -1018,11 +990,6 @@ button {
 
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .site-footer {
-    width: min(100% - 20px, 680px);
-    flex-direction: column;
   }
 }
 
