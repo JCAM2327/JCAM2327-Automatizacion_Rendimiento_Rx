@@ -11,7 +11,9 @@ import { downloadResults, parseSpreadsheet, type ParsedSpreadsheet } from "@/lib
 import {
   analyzeRows,
   detectNumericColumns,
+  detectYieldColumns,
   formatNumber,
+  summarizeResults,
   type DataRow,
   type SummaryStats,
   type YieldResult,
@@ -44,6 +46,10 @@ export function YieldApp() {
 
   const numericColumns = useMemo(() => detectNumericColumns(rows), [rows]);
   const previewRows = useMemo(() => rows.slice(0, 8), [rows]);
+  const insights = useMemo(
+    () => (stats ? summarizeResults(results, stats) : null),
+    [results, stats]
+  );
   const canCalculate = rows.length > 0 && Boolean(realColumn) && Boolean(theoreticalColumn);
 
   const statCards = stats
@@ -99,19 +105,22 @@ export function YieldApp() {
 
       const parsed = await parseSpreadsheet(selectedFile);
       const detectedNumericColumns = detectNumericColumns(parsed.rows);
+      const selection = detectYieldColumns(parsed.columns, parsed.rows);
 
       setFile(selectedFile);
       setSpreadsheet(parsed);
       setRows(parsed.rows);
       setColumns(parsed.columns);
-      setRealColumn(detectedNumericColumns[0] ?? parsed.columns[0] ?? "");
-      setTheoreticalColumn(
-        detectedNumericColumns[1] ?? parsed.columns[1] ?? ""
-      );
+      setRealColumn(selection.realColumn);
+      setTheoreticalColumn(selection.theoreticalColumn);
 
       if (detectedNumericColumns.length < 2) {
         setNotice(
           "No se detectaron dos columnas numéricas. Seleccioná manualmente las columnas de producto real y producto teórico."
+        );
+      } else if (selection.matchedByName) {
+        setNotice(
+          `Detectamos automáticamente "${selection.realColumn}" y "${selection.theoreticalColumn}" por el nombre de los encabezados. Revisá que sean las columnas correctas.`
         );
       }
     } catch (caughtError) {
@@ -286,6 +295,73 @@ export function YieldApp() {
       </header>
 
       <div className="app-shell" id="app">
+        <section className="app-card guide-card" aria-labelledby="guide-title">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow eyebrow-small">Antes de empezar</p>
+              <h2 id="guide-title">Qué necesitás y qué hace la app</h2>
+              <p>
+                La app no modifica el archivo original: lee los datos en tu
+                navegador y calcula el rendimiento sin enviarlos a un servidor.
+              </p>
+            </div>
+          </div>
+
+          <div className="guide-grid">
+            <article className="guide-item">
+              <span className="guide-index">01</span>
+              <h3>Formato del archivo</h3>
+              <ul>
+                <li>La primera fila debe contener los encabezados.</li>
+                <li>
+                  Necesitás al menos dos columnas numéricas: producto real y
+                  producto teórico.
+                </li>
+                <li>Ambas columnas deben usar la misma unidad de masa (g).</li>
+                <li>No puede haber valores nulos en las columnas elegidas.</li>
+                <li>
+                  El producto real debe ser mayor o igual a 0 y el teórico,
+                  mayor que 0.
+                </li>
+              </ul>
+            </article>
+
+            <article className="guide-item">
+              <span className="guide-index">02</span>
+              <h3>Qué hace la app</h3>
+              <ol>
+                <li>Lee el archivo Excel o CSV en el navegador.</li>
+                <li>
+                  Detecta las columnas por sus encabezados y te permite
+                  corregirlas.
+                </li>
+                <li>
+                  Calcula el rendimiento de cada fila: producto real ÷ producto
+                  teórico × 100.
+                </li>
+                <li>
+                  Resume promedio, mediana, desvío estándar, mínimo, máximo y
+                  tolerancia de ±5%.
+                </li>
+              </ol>
+            </article>
+
+            <article className="guide-item">
+              <span className="guide-index">03</span>
+              <h3>Cómo leer los resultados</h3>
+              <ul>
+                <li>Cada barra representa una fila o experimento.</li>
+                <li>La línea azul marca el rendimiento promedio.</li>
+                <li>Las líneas rojas marcan el margen de ±5%.</li>
+                <li>
+                  Un rendimiento mayor a 100% no siempre es un error, pero
+                  conviene revisar masas, unidades y pureza.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
         <section className="app-card" aria-labelledby="upload-title">
           <div className="section-heading">
             <div>
@@ -337,6 +413,12 @@ export function YieldApp() {
               </a>
             </div>
           </div>
+
+          {isLoading ? (
+            <p className="message message-info" role="status">
+              Leyendo el archivo y detectando las columnas numéricas...
+            </p>
+          ) : null}
 
           {error ? (
             <p className="message message-error" role="alert">
@@ -428,6 +510,13 @@ export function YieldApp() {
                   {numericColumns.length} columnas numéricas detectadas
                 </span>
               </div>
+
+              <p className="field-help">
+                La app intenta reconocer las columnas por sus encabezados
+                (&quot;real&quot; y &quot;teórico&quot;). Si no los encuentra,
+                usa las primeras columnas numéricas. Revisá la selección antes
+                de calcular.
+              </p>
 
               <div className="field-grid">
                 <label className="field">
@@ -543,6 +632,42 @@ export function YieldApp() {
               </div>
               <YieldChart results={results} stats={stats} />
             </div>
+
+            {insights ? (
+              <section
+                className="app-card insight-card"
+                aria-labelledby="insights-title"
+              >
+                <div className="section-heading">
+                  <div>
+                    <p className="eyebrow eyebrow-small">
+                      Lectura del análisis
+                    </p>
+                    <h3 id="insights-title">Qué dicen estos resultados</h3>
+                    <p>
+                      Resumen automático para orientar la interpretación de los
+                      datos cargados.
+                    </p>
+                  </div>
+                </div>
+
+                <ul className="insight-list">
+                  <li>{insights.overview}</li>
+                  <li>{insights.range}</li>
+                  <li>{insights.tolerance}</li>
+                  <li>{insights.dispersion}</li>
+                </ul>
+
+                <p className="insight-conclusion">
+                  <strong>Conclusión:</strong> {insights.conclusion}
+                </p>
+                <p className="tolerance-note">
+                  Esta lectura es automática y no reemplaza la validación
+                  experimental, el análisis de unidades ni la revisión de
+                  pureza de los productos.
+                </p>
+              </section>
+            ) : null}
 
             <div className="app-card">
               <div className="table-heading">

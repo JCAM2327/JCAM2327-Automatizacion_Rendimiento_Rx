@@ -59,6 +59,61 @@ export function detectNumericColumns(rows: DataRow[]): string[] {
   });
 }
 
+function normalizeLabel(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+export interface ColumnSelection {
+  realColumn: string;
+  theoreticalColumn: string;
+  matchedByName: boolean;
+}
+
+export function detectYieldColumns(
+  columns: string[],
+  rows: DataRow[]
+): ColumnSelection {
+  const numericColumns = detectNumericColumns(rows);
+  const labeledColumns = columns.map((column) => ({
+    column,
+    label: normalizeLabel(column),
+  }));
+  const realCandidate = labeledColumns.find(
+    ({ label }) =>
+      /(^|\s)(real|actual|obtenid)/.test(label) &&
+      !/teor|theor|esperad/.test(label)
+  );
+  const theoreticalCandidate = labeledColumns.find(({ label }) =>
+    /teor|theor|esperad/.test(label)
+  );
+  const remainingNumeric = numericColumns.filter(
+    (column) =>
+      column !== realCandidate?.column &&
+      column !== theoreticalCandidate?.column
+  );
+  const realColumn =
+    realCandidate?.column ??
+    remainingNumeric[0] ??
+    numericColumns[0] ??
+    columns[0] ??
+    "";
+  const theoreticalColumn =
+    theoreticalCandidate?.column ??
+    remainingNumeric.find((column) => column !== realColumn) ??
+    numericColumns.find((column) => column !== realColumn) ??
+    columns.find((column) => column !== realColumn) ??
+    "";
+
+  return {
+    realColumn,
+    theoreticalColumn,
+    matchedByName: Boolean(realCandidate && theoreticalCandidate),
+  };
+}
+
 function quantile(sortedValues: number[], q: number): number {
   if (sortedValues.length === 1) return sortedValues[0];
 
@@ -163,6 +218,65 @@ export function analyzeRows(
     ok: true,
     results,
     stats: computeStats(results.map((result) => result.yield)),
+  };
+}
+
+export interface ResultsSummary {
+  overview: string;
+  range: string;
+  tolerance: string;
+  dispersion: string;
+  conclusion: string;
+}
+
+export function summarizeResults(
+  results: YieldResult[],
+  stats: SummaryStats
+): ResultsSummary {
+  const minResult = results.reduce((lowest, result) =>
+    result.yield < lowest.yield ? result : lowest
+  );
+  const maxResult = results.reduce((highest, result) =>
+    result.yield > highest.yield ? result : highest
+  );
+  const tolerance = stats.mean * 0.05;
+  const withinTolerance = results.filter(
+    (result) => Math.abs(result.yield - stats.mean) <= tolerance
+  ).length;
+  const withinShare = (withinTolerance / stats.count) * 100;
+  const overHundred = results.filter((result) => result.yield > 100).length;
+
+  let conclusion: string;
+  if (overHundred > 0) {
+    conclusion = `${overHundred} ${
+      overHundred === 1 ? "fila supera" : "filas superan"
+    } el 100% de rendimiento. Revisá masas, unidades y pureza antes de interpretar esos valores.`;
+  } else if (withinTolerance === stats.count) {
+    conclusion =
+      "Todas las filas quedaron dentro del margen de ±5% respecto del promedio: el conjunto es homogéneo en esa tolerancia.";
+  } else {
+    conclusion = `${stats.count - withinTolerance} ${
+      stats.count - withinTolerance === 1 ? "fila quedó" : "filas quedaron"
+    } fuera del margen de ±5%. Conviene revisar esos experimentos antes de sacar conclusiones.`;
+  }
+
+  return {
+    overview: `Se analizaron ${formatNumber(stats.count, 0)} filas. El rendimiento promedio fue ${formatNumber(
+      stats.mean
+    )}% y la mediana ${formatNumber(stats.median)}%.`,
+    range: `El mínimo fue ${formatNumber(minResult.yield)}% (fila ${
+      minResult.index
+    }) y el máximo ${formatNumber(maxResult.yield)}% (fila ${maxResult.index}).`,
+    tolerance: `${formatNumber(withinTolerance, 0)} de ${formatNumber(
+      stats.count,
+      0
+    )} filas (${formatNumber(
+      withinShare
+    )}%) quedaron dentro del margen de ±5% del promedio.`,
+    dispersion: `El desvío estándar fue ${formatNumber(
+      stats.stdDev
+    )} puntos porcentuales: cuanto más alto, mayor es la dispersión entre experimentos.`,
+    conclusion,
   };
 }
 

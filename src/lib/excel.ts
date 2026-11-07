@@ -47,15 +47,36 @@ export async function parseSpreadsheet(file: File): Promise<ParsedSpreadsheet> {
     throw new Error("La hoja está vacía.");
   }
 
-  const columns = makeUniqueHeaders(matrix[0] ?? []);
-  const rows = matrix
-    .slice(1)
-    .filter((row) => row.some((cell) => !isBlank(cell)))
+  const headerRow = matrix[0] ?? [];
+  const dataRows = matrix.slice(1);
+  const columnCount = dataRows.reduce(
+    (max, row) => Math.max(max, row.length),
+    headerRow.length
+  );
+  const columnIndexes = Array.from(
+    { length: columnCount },
+    (_, index) => index
+  ).filter((index) => {
+    if (!isBlank(headerRow[index])) return true;
+    return dataRows.some((row) => !isBlank(row[index]));
+  });
+
+  if (columnIndexes.length === 0) {
+    throw new Error("La hoja no contiene columnas con datos.");
+  }
+
+  const columns = makeUniqueHeaders(
+    columnIndexes.map((index) => headerRow[index])
+  );
+  const rows = dataRows
+    .filter((row) =>
+      columnIndexes.some((index) => !isBlank(row[index]))
+    )
     .map((row) => {
       const record: DataRow = {};
 
-      columns.forEach((column, index) => {
-        record[column] = row[index] ?? null;
+      columnIndexes.forEach((sourceIndex, columnIndex) => {
+        record[columns[columnIndex]] = row[sourceIndex] ?? null;
       });
 
       return record;

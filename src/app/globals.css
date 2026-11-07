@@ -65,6 +65,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -261,10 +262,12 @@ button {
   margin: -56px auto 0;
   padding-bottom: 40px;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
 }
 
 .app-card {
+  min-width: 0;
   padding: clamp(20px, 3vw, 32px);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -291,6 +294,58 @@ button {
   max-width: 680px;
   margin: 8px 0 0;
   color: var(--muted);
+}
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.guide-item {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+}
+
+.guide-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--accent-line);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.guide-item h3 {
+  margin: 12px 0 8px;
+  font-size: 1rem;
+}
+
+.guide-item ul,
+.guide-item ol {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.guide-item li + li {
+  margin-top: 6px;
+}
+
+.guide-item li::marker {
+  color: var(--accent);
+  font-weight: 800;
 }
 
 .eyebrow-small {
@@ -460,6 +515,12 @@ button {
   color: var(--notice);
 }
 
+.message-info {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
 .file-status {
   display: flex;
   flex-wrap: wrap;
@@ -513,6 +574,7 @@ button {
 }
 
 .table-scroll {
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
@@ -564,6 +626,12 @@ button {
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+.field-help {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.86rem;
 }
 
 .field-grid {
@@ -647,8 +715,39 @@ button {
 
 .results-section {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
+  min-width: 0;
   scroll-margin-top: 24px;
+}
+
+.insight-card {
+  border-color: var(--accent-line);
+  background: linear-gradient(180deg, var(--surface), var(--accent-soft));
+}
+
+.insight-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.insight-list li::marker {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.insight-conclusion {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .stats-grid {
@@ -722,6 +821,7 @@ button {
 }
 
 .chart-scroll {
+  max-width: 100%;
   overflow-x: auto;
   padding-bottom: 4px;
 }

@@ -9,12 +9,14 @@ MVP con demo pública en Vercel: <https://rendimientoquimico.vercel.app>. La ver
 ## Características
 
 - Carga de archivos `.xlsx`, `.xls` o `.csv` (máximo 10 MB).
+- Guía integrada con los requisitos del archivo, la explicación del cálculo y la lectura de resultados.
 - Vista previa de las primeras filas del archivo.
-- Detección automática de columnas numéricas y selección manual de las columnas de producto real y teórico.
+- Detección automática de columnas por encabezado y selección manual de las columnas de producto real y teórico.
 - Validación de valores nulos, negativos y ceros.
 - Cálculo del rendimiento porcentual por fila.
 - Estadísticas descriptivas: promedio, mediana, desvío estándar, mínimo, máximo y cuartiles.
 - Gráfico de barras por fila con promedio y margen de tolerancia de ±5%.
+- Resumen interpretativo automático con conclusión, dispersión y advertencias.
 - Descarga de un Excel con los datos procesados y un resumen estadístico.
 - Procesamiento en memoria, sin base de datos ni persistencia.
 
